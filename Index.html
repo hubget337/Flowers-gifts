@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flower Gift</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #0b1020;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+    #gift {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(135deg, #ff4b1f, #ff9068);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 32px;
+      font-weight: bold;
+      transition: transform 0.3s;
+    }
+    #gift:hover {
+      transform: scale(1.05);
+    }
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="gift">🎁</div>
+  <canvas id="canvas"></canvas>  <script>
+    const gift = document.getElementById("gift");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let width, height;
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    gift.addEventListener("click", () => {
+      gift.style.display = "none";
+      canvas.style.display = "block";
+      animateFlowers();
+    });
+
+    function drawFlower(cx, cy, a, k, color, rotation) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rotation);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      const steps = 1000;
+      for (let i = 0; i <= steps; i++) {
+        const t = (i / steps) * Math.PI * 2;
+        const r = a * Math.sin(k * t);
+        const x = r * Math.cos(t);
+        const y = r * Math.sin(t);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function animateFlowers() {
+      let t = 0;
+      const colors = ["#ff9a9e", "#fad0c4", "#fbc2eb", "#a18cd1", "#fcb69f"];
+      function frame() {
+        ctx.fillStyle = "rgba(11,16,32,0.2)";
+        ctx.fillRect(0, 0, width, height);
+
+        for (let i = 0; i < 10; i++) {
+          const angle = (i / 10) * Math.PI * 2 + t * 0.3;
+          const r = 200 + 80 * Math.sin(t * 0.5 + i);
+          const x = width/2 + r * Math.cos(angle);
+          const y = height/2 + r * Math.sin(angle);
+          const color = colors[i % colors.length];
+          drawFlower(x, y, 40 + 10 * Math.sin(t + i), 6, color, t*0.5);
+        }
+
+        t += 0.02;
+        requestAnimationFrame(frame);
+      }
+      frame();
+    }
+  </script></body>
+</html>
